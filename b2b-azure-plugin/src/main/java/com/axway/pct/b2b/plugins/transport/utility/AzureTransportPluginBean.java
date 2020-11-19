@@ -13,6 +13,8 @@ public class AzureTransportPluginBean {
 	private String postProcess;
 	private String userMetadata;
 	private String appendMetadata;
+	private String sasToken;
+	private String authenticateMode;
 
 	public String getName() {
 		return name;
@@ -110,11 +112,26 @@ public class AzureTransportPluginBean {
 
 	public void setAppendMetadata(String appendMetadata) {
 		this.appendMetadata = appendMetadata;
-		
+
 	}
 
 	public String getAppendMetadata() {
 		return appendMetadata;
 	}
 
+	public String getSasToken() {
+		return sasToken;
+	}
+
+	public void setSasToken(String sasToken) {
+		this.sasToken = sasToken;
+	}
+
+	public String getAuthenticateMode() {
+		return authenticateMode;
+	}
+
+	public void setAuthenticateMode(String authenticateMode) {
+		this.authenticateMode = authenticateMode;
+	}
 }

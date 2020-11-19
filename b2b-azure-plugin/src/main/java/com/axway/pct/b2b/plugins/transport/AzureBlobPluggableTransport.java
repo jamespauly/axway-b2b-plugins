@@ -70,6 +70,8 @@ public class AzureBlobPluggableTransport implements PluggableClient {
 	private static final String SETTING_DELIVERY_MODE = "Delivery Mode";
 	private static final String SETTING_USER_METADATA = "User Metadata";
 	private static final String SETTING_APPEND_AXWAY_METADATA = "Append Axway Metadata";
+	private static final String SETTING_SAS_TOKEN = "SAS Connection String";
+	private static final String SETTING_AUTHENTICATE_MODE = "Authenticate Mode";
 
 	// Setting to distinguish pickup and delivery mode
 	private static final String SETTING_EXCHANGE_TYPE = "Exchange Type";
@@ -95,7 +97,7 @@ public class AzureBlobPluggableTransport implements PluggableClient {
 
 	/**
 	 * Initialize the Pluggable Client Instance
-	 * 
+	 *
 	 * @param pluggableSettings
 	 * @throws TransportInitializationException
 	 */
@@ -138,23 +140,42 @@ public class AzureBlobPluggableTransport implements PluggableClient {
 
 				if (pluginType.equalsIgnoreCase(PluginConstants.EXCHANGE_PICKUP_NAME)) {
 
+					if (pluggableSettings.getSetting(SETTING_AUTHENTICATE_MODE).equals("SAS Token")) {
+						bean.setSasToken(pluggableSettings.getSetting(SETTING_SAS_TOKEN));
+					} else {
+						bean.setKey(pluggableSettings.getSetting(SETTING_KEY));
+						bean.setName(pluggableSettings.getSetting(SETTING_NAME));
+					}
+
 					bean.setContainer(pluggableSettings.getSetting(SETTING_CONTAINER));
 					bean.setPickupPattern(pluggableSettings.getSetting(SETTING_PICKUP_PATTERN));
 					bean.setPickupPath(pluggableSettings.getSetting(SETTING_PICKUP_PATH));
 					bean.setPatternType(pluggableSettings.getSetting(SETTING_PATTERN_TYPE));
 					bean.setKey(pluggableSettings.getSetting(SETTING_KEY));
 					bean.setName(pluggableSettings.getSetting(SETTING_NAME));
-					
+					bean.setSasToken(pluggableSettings.getSetting(SETTING_SAS_TOKEN));
+					bean.setAuthenticateMode(pluggableSettings.getSetting(SETTING_AUTHENTICATE_MODE));
+
 					if (pluggableSettings.getSetting(SETTING_PICKUP_PATH).equals("")) {
 						bean.setPickupPath("/");
 					}
-					
+
 					log.debug(LOGGER_KEY + "Container		: " + bean.getContainer());
 					log.debug(LOGGER_KEY + "Pickup Pattern	: " + bean.getPickupPattern());
 					log.debug(LOGGER_KEY + "Pickup Path		: " + bean.getPickupPath());
 					log.debug(LOGGER_KEY + "Pattern Type	: " + bean.getPatternType());
 					log.debug(LOGGER_KEY + "Storage Account	: " + bean.getName());
+					log.debug(LOGGER_KEY + "SAS Token				: " + bean.getSasToken());
+					log.debug(LOGGER_KEY + "Authenticate Mode		: " + bean.getAuthenticateMode());
+
 				} else if(pluginType.equalsIgnoreCase(PluginConstants.EXCHANGE_DELIVERY_NAME)){
+
+					if (pluggableSettings.getSetting(SETTING_AUTHENTICATE_MODE).equals("SAS Token")) {
+						bean.setSasToken(pluggableSettings.getSetting(SETTING_SAS_TOKEN));
+					} else {
+						bean.setKey(pluggableSettings.getSetting(SETTING_KEY));
+						bean.setName(pluggableSettings.getSetting(SETTING_NAME));
+					}
 
 					bean.setAutoCreateContainer(pluggableSettings.getSetting(SETTING_AUTO_CREATE));
 					bean.setContainer(pluggableSettings.getSetting(SETTING_CONTAINER));
@@ -164,6 +185,8 @@ public class AzureBlobPluggableTransport implements PluggableClient {
 					bean.setUploadMode(pluggableSettings.getSetting(SETTING_DELIVERY_MODE));
 					bean.setUserMetadata(pluggableSettings.getSetting(SETTING_USER_METADATA));
 					bean.setAppendMetadata(pluggableSettings.getSetting(SETTING_APPEND_AXWAY_METADATA));
+					bean.setSasToken(pluggableSettings.getSetting(SETTING_SAS_TOKEN));
+					bean.setAuthenticateMode(pluggableSettings.getSetting(SETTING_AUTHENTICATE_MODE));
 
 					log.debug(LOGGER_KEY + "Container				: " + bean.getContainer());
 					log.debug(LOGGER_KEY + "Auto Create 			: " + bean.getAutoCreateContainer());
@@ -172,6 +195,8 @@ public class AzureBlobPluggableTransport implements PluggableClient {
 					log.debug(LOGGER_KEY + "User Metadata			: " + bean.getUserMetadata());
 					log.debug(LOGGER_KEY + "Add B2Bi Metadata		: " + bean.getAppendMetadata());
 					log.debug(LOGGER_KEY + "Storage Account			: " + bean.getName());
+					log.debug(LOGGER_KEY + "SAS Connection String	: " + bean.getSasToken());
+					log.debug(LOGGER_KEY + "Authenticate Mode		: " + bean.getAuthenticateMode());
 
 				}
 
@@ -189,12 +214,22 @@ public class AzureBlobPluggableTransport implements PluggableClient {
 		log.debug(LOGGER_KEY + "-- Authentication -- " + _exchangeType);
 
 		try {
-			if (this.mStorageAccount == null) {
-				this.mStorageAccount = CloudStorageAccount
-						.parse(AzureTransportUtility.getConnectionString(this.config.getName(), this.config.getKey()));
-				log.info(LOGGER_KEY + "Authentication being done again: " + this.mStorageAccount.getBlobStorageUri().toString());
+			if (this.config.getAuthenticateMode().equals("Key")) {
+				if (this.mStorageAccount == null) {
+					this.mStorageAccount = CloudStorageAccount
+							.parse(AzureTransportUtility.getConnectionString(this.config.getName(), this.config.getKey()));
+					log.info(LOGGER_KEY + "Authentication being done again: " + this.mStorageAccount.getBlobStorageUri().toString());
+				} else {
+					log.info(LOGGER_KEY + "Authentication already done to: " + this.mStorageAccount.getBlobStorageUri().toString());
+				}
 			} else {
-				log.info(LOGGER_KEY + "Authentication already done to: " + this.mStorageAccount.getBlobStorageUri().toString());
+				if (this.mStorageAccount == null) {
+					this.mStorageAccount = CloudStorageAccount
+							.parse(AzureTransportUtility.getConnectionString(this.config.getSasToken()));
+					log.info(LOGGER_KEY + "Authentication being done again: " + this.mStorageAccount.getBlobStorageUri().toString());
+				} else {
+					log.info(LOGGER_KEY + "Authentication already done to: " + this.mStorageAccount.getBlobStorageUri().toString());
+				}
 			}
 		} catch (InvalidKeyException e) {
 			log.error(LOGGER_KEY + e.getMessage(), e);
@@ -210,8 +245,14 @@ public class AzureBlobPluggableTransport implements PluggableClient {
 		boolean autoCreateContainer = false;
 
 		try {
-			this.mStorageAccount = CloudStorageAccount
-					.parse(AzureTransportUtility.getConnectionString(this.config.getName(), this.config.getKey()));
+			if (this.config.getAuthenticateMode().equals("Key")) {
+				this.mStorageAccount = CloudStorageAccount
+						.parse(AzureTransportUtility.getConnectionString(this.config.getName(), this.config.getKey()));
+			} else {
+				log.info(this.config.getSasToken());
+				this.mStorageAccount = CloudStorageAccount
+						.parse(AzureTransportUtility.getConnectionString(this.config.getSasToken()));
+			}
 			this.mBlobClient = this.mStorageAccount.createCloudBlobClient();
 			this.mBlobContainer = this.mBlobClient.getContainerReference(this.config.getContainer());
 			autoCreateContainer = Boolean.parseBoolean(this.config.getAutoCreateContainer());
@@ -446,7 +487,7 @@ public class AzureBlobPluggableTransport implements PluggableClient {
 	}
 
 	private boolean chunkUpload(CloudBlobContainer container, String fileName, PluggableMessage pluggableMessage,
-			Map<String, String> userMetadata, long fileSize) throws UnableToProduceException {
+								Map<String, String> userMetadata, long fileSize) throws UnableToProduceException {
 		boolean status = false;
 		CloudBlockBlob chunkedBlob;
 		int blockCount = (int) ((float) fileSize / (float) PluginConstants.BLOCK_SIZE) + 1;
@@ -534,7 +575,7 @@ public class AzureBlobPluggableTransport implements PluggableClient {
 	}
 
 	private boolean regularUpload(CloudBlobContainer container, String fileName, PluggableMessage pluggableMessage,
-			Map<String, String> customMetadata, long fileSize) throws UnableToProduceException {
+								  Map<String, String> customMetadata, long fileSize) throws UnableToProduceException {
 		boolean status = false;
 		CloudBlockBlob singleBlob;
 		String containerName = container.getName();

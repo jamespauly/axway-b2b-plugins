@@ -39,6 +39,12 @@ public class AzureTransportUtility {
 		return connectionString;
 	}
 
+	public static String getConnectionString(String sasToken) {
+		String connectionString = sasToken;
+		log.debug(LOGGER_KEY + "ConnectionString: " + connectionString);
+		return connectionString;
+	}
+
 	public static String getSanitizedDownloadPath(String downloadObjectKey) {
 		if (downloadObjectKey == null) {
 			log.info(LOGGER_KEY + "Download object key set to the root of the container. Null value specified");
@@ -106,7 +112,7 @@ public class AzureTransportUtility {
 	}
 
 	public static List<String> searchBlobItemList(AzureTransportPluginBean config,
-			ArrayList<ListBlobItem> blobItemList) {
+												  ArrayList<ListBlobItem> blobItemList) {
 		ArrayList<String> result = new ArrayList<String>();
 		String downloadPattern = config.getPickupPattern();
 		String patternType = config.getPatternType();
@@ -185,16 +191,16 @@ public class AzureTransportUtility {
 		for (Iterator<String> iterator = pluggableMessageMetadata.keySet().iterator(); iterator.hasNext();) {
 			String key = (String) iterator.next();
 			String value = pluggableMessageMetadata.get(key);
-			
+
 			// Check for empty value
 			if (null == value || value.isEmpty()) {
 				value = "EMPTY";
 				log.debug(LOGGER_KEY + "Replacing null/empty values with 'EMPTY' string literal for [Key: " + key + "]");
 			}
-			
+
 			String sk = sanitizeMetadataName(key).toLowerCase();
 			azureFormatMetadata.put(sk, value);
-			
+
 			log.debug(LOGGER_KEY + "Interchange Metadata [Key: " + sk + ", Value: " + pluggableMessageMetadata.get(key) + "]");
 
 		}

@@ -1,74 +1,414 @@
-<!--
+<?xml version="1.0" encoding="UTF-8"?>
+<TransportDefinitions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xsi:noNamespaceSchemaLocation="pluggabletransports.xsd">
+    <!-- Sample pluggable transport definitions. See pluggabletransports.xsd schema for full description of possible elements and attributes. -->
+    <!-- Example 1:  The implementation class for this example is included with the product. -->
+    <!--             To try it, uncomment the two "Custom file..." transport definitions below. -->
+    <!--
+	<TransportDefinition name="Custom file system consumer" description="Pluggable transport which consumes messages from the file system." available="true">
+		<Class>com.cyclonecommerce.tradingengine.transport.pluggable.api.PluggableClientExample</Class>
+		<Usages>
+			<Consume>
+				<Integration/>
+			</Consume>
+		</Usages>
+		<SettingDefinitions>
+			<SettingDefinition name="Directory" description="Directory from which files will be consumed." type="string" required="true" encrypt="false" mask="false"/>
+		</SettingDefinitions>
+		<ConstantSettings>
+			<ConstantSetting name="Fum3 XPath" value="/foo/fum[3]"/>
+		</ConstantSettings>
+	</TransportDefinition>
+	<TransportDefinition name="Custom file system producer" description="Pluggable transport which produces messages to the file system." available="true">
+		<Class>com.cyclonecommerce.tradingengine.transport.pluggable.api.PluggableClientExample</Class>
+		<Usages>
+			<Produce>
+				<Integration/>
+			</Produce>
+		</Usages>
+		<SettingDefinitions>
+			<SettingDefinition name="Directory" description="Directory where files will be produced." type="string" required="true" encrypt="false" mask="false"/>
+		</SettingDefinitions>
+	</TransportDefinition>
+	-->
+    <!-- Example 2:  This example is shown for illustration only.  No actual implementation class is provided. -->
+    <!--
+	<TransportDefinition name="Sample" description="Transport for communicating with the Sample FTP server." available="true">
+		<Class>com.abc.transport.Sample</Class>
+		<Usages>
+			<Produce>
+				<Integration/>
+				<AS3Trading/>
+				<ASxTrading/>
+				<RawTrading/>
+			</Produce>
+			<Consume>
+				<Integration/>
+				<AS3Trading/>
+				<ASxTrading/>
+				<RawTrading/>
+			</Consume>
+		</Usages>
+		<SettingDefinitions>
+			<SettingDefinition name="Host server" description="Name of the host machine." type="string" required="true" encrypt="false" mask="false"/>
+			<SettingDefinition name="Port" type="number" min="1" max="65535" defaultValue="21" required="true" encrypt="false" mask="false"/>
+			<SettingDefinition name="User" type="string" defaultValue="" required="false" encrypt="false" mask="false"/>
+			<SettingDefinition name="Password" type="string" defaultValue="" required="false" encrypt="true" mask="true"/>
+			<SettingDefinition name="Text mode" description="Text encoding mode to use for file transfers." type="string" defaultValue="BINARY" required="true" encrypt="false" mask="false">
+				<SelectionList>
+					<SelectionItem>ASCII</SelectionItem>
+					<SelectionItem>BINARY</SelectionItem>
+				</SelectionList>
+			</SettingDefinition>
+		</SettingDefinitions>
+		<ConstantSettings>
+			<ConstantSetting name="TempDir" value="/tmp/ftp"/>
+			<ConstantSetting name="ValidationClass" value="/var/validators/com.abc.Validator" visible="false"/>
+		</ConstantSettings>
+	</TransportDefinition>
+	-->
+    <TransportDefinition name="SMB Consumer"
+                         description="Pluggable transport which consumes messages from SMB shares." available="true">
+        <Class>com.axway.gps.PluggableSMBTransport</Class>
+        <Usages>
+            <Consume>
+                <Integration/>
+                <RawTrading/>
+            </Consume>
+        </Usages>
+        <SettingDefinitions>
+            <SettingDefinition name="SMB Host" defaultValue="" description="IP-Address or Hostname"
+                               type="string" required="true" encrypt="false" mask="false"/>
+            <SettingDefinition name="SMB Share" defaultValue=""
+                               description="SMB Share. Illustrative example: Folder\PickupFolder" type="string"
+                               required="true" encrypt="true" mask="false"/>
+            <SettingDefinition name="Filter Type" defaultValue="glob"
+                               description="Pattern type for matching file names" type="string" required="true"
+                               encrypt="false" mask="false">
+                <SelectionList>
+                    <SelectionItem>glob</SelectionItem>
+                    <SelectionItem>regex</SelectionItem>
+                </SelectionList>
+            </SettingDefinition>
+            <SettingDefinition name="Filter" defaultValue="*"
+                               description="Filter pattern to download remote files" encrypt="false" mask="false"
+                               required="true" type="string"/>
+            <SettingDefinition name="Domain User" defaultValue="" description="Valid domain user"
+                               encrypt="false" mask="false" required="true" type="string"/>
+            <SettingDefinition name="Domain Password" defaultValue=""
+                               description="Password for domain user" encrypt="true" mask="true" required="true"
+                               type="string"/>
+            <SettingDefinition name="Domain" defaultValue="" description="Windows Domain"
+                               encrypt="false" mask="false" required="true" type="string"/>
+
+        </SettingDefinitions>
+        <ConstantSettings>
+            <ConstantSetting name="Exchange Type" value="pickup"/>
+        </ConstantSettings>
+    </TransportDefinition>
+    <TransportDefinition name="SMB Producer"
+                         description="Pluggable transport which produces messages to SMB shares." available="true">
+        <Class>com.axway.gps.PluggableSMBTransport</Class>
+        <Usages>
+            <Produce>
+                <Integration/>
+                <RawTrading/>
+            </Produce>
+        </Usages>
+        <SettingDefinitions>
+            <SettingDefinition name="SMB Host" defaultValue="" description="IP-Address or Hostname"
+                               type="string" required="true" encrypt="false" mask="false"/>
+            <SettingDefinition name="SMB Share" defaultValue=""
+                               description="SMB Share. Illustrative example: Folder\DeliveryFolder" type="string"
+                               required="true" encrypt="true" mask="false"/>
+            <SettingDefinition name="Create Folder"
+                               description="Create delivery folder if it doesn't exist" encrypt="false"
+                               mask="false" required="true" type="string" defaultValue="true">
+                <SelectionList>
+                    <SelectionItem>true</SelectionItem>
+                    <SelectionItem>false</SelectionItem>
+                </SelectionList>
+            </SettingDefinition>
+            <SettingDefinition name="Overwrite" description="Overwrite existing files"
+                               encrypt="false" mask="false" required="true" type="string" defaultValue="false">
+                <SelectionList>
+                    <SelectionItem>true</SelectionItem>
+                    <SelectionItem>false</SelectionItem>
+                </SelectionList>
+            </SettingDefinition>
+            <SettingDefinition name="Domain User" defaultValue="" description="Valid domain user"
+                               encrypt="false" mask="false" required="true" type="string"/>
+            <SettingDefinition name="Domain Password" defaultValue=""
+                               description="Password for domain user" encrypt="true" mask="true" required="true"
+                               type="string"/>
+            <SettingDefinition name="Domain" defaultValue="" description="Windows Domain"
+                               encrypt="false" mask="false" required="true" type="string"/>
+        </SettingDefinitions>
+
+        <ConstantSettings>
+            <ConstantSetting name="Exchange Type" value="delivery"/>
+        </ConstantSettings>
+    </TransportDefinition>
+    <TransportDefinition name="S3 Consumer"
+                         description="Pluggable transport which consumes messages from S3 Buckets / Folders."
+                         available="true">
+        <Class>com.axway.gps.PluggableS3Transport</Class>
+        <Usages>
+            <Consume>
+                <Integration/>
+                <RawTrading/>
+            </Consume>
+        </Usages>
+        <SettingDefinitions>
+            <SettingDefinition name="Access Key" defaultValue="" description="AWS Access Key"
+                               type="string" required="true" encrypt="false" mask="false"/>
+            <SettingDefinition name="Secret Key" defaultValue="" description="AWS Secret Key"
+                               type="string" required="true" encrypt="true" mask="true"/>
+            <SettingDefinition name="AWS Region" defaultValue="us-west-1"
+                               description="Select AWS region to reduce latency" type="string" required="true"
+                               encrypt="false" mask="false">
+                <SelectionList>
+                    <SelectionItem>us-east-2</SelectionItem>
+                    <SelectionItem>us-east-1</SelectionItem>
+                    <SelectionItem>us-west-1</SelectionItem>
+                    <SelectionItem>us-west-2</SelectionItem>
+                    <SelectionItem>ap-south-1</SelectionItem>
+                    <SelectionItem>ap-northeast-2</SelectionItem>
+                    <SelectionItem>ap-northeast-3</SelectionItem>
+                    <SelectionItem>ap-southeast-1</SelectionItem>
+                    <SelectionItem>ap-southeast-2</SelectionItem>
+                    <SelectionItem>ap-northeast-1</SelectionItem>
+                    <SelectionItem>ca-central-1</SelectionItem>
+                    <SelectionItem>cn-north-1</SelectionItem>
+                    <SelectionItem>eu-central-1</SelectionItem>
+                    <SelectionItem>eu-west-1</SelectionItem>
+                    <SelectionItem>eu-west-2</SelectionItem>
+                    <SelectionItem>eu-west-3</SelectionItem>
+                    <SelectionItem>sa-east-1</SelectionItem>
+                </SelectionList>
+            </SettingDefinition>
+            <SettingDefinition name="Bucket" defaultValue="" description="Bucket name"
+                               encrypt="false" mask="false" required="true" type="string"/>
+            <SettingDefinition name="Folder" defaultValue=""
+                               description="Folder name. Illustrative example: Folder\PickupFolder" encrypt="false"
+                               mask="false" required="true" type="string"/>
+            <SettingDefinition name="Filter Type" defaultValue="glob"
+                               description="Pattern type for matching file names" type="string" required="true"
+                               encrypt="false" mask="false">
+                <SelectionList>
+                    <SelectionItem>glob</SelectionItem>
+                    <SelectionItem>regex</SelectionItem>
+                </SelectionList>
+            </SettingDefinition>
+            <SettingDefinition name="Filter" defaultValue="*"
+                               description="Filter pattern to download remote files" encrypt="false" mask="false"
+                               required="true" type="string"/>
+            <SettingDefinition name="Use Proxy" description="Use Proxy for pickup exchanges"
+                               encrypt="false" mask="false" required="true" type="string" defaultValue="false">
+                <SelectionList>
+                    <SelectionItem>true</SelectionItem>
+                    <SelectionItem>false</SelectionItem>
+                </SelectionList>
+            </SettingDefinition>
+            <SettingDefinition name="Proxy Host" defaultValue="" description="" type="string"
+                               required="false" encrypt="false" mask="false"/>
+            <SettingDefinition name="Proxy Port" defaultValue="" description="" type="string"
+                               required="false" encrypt="false" mask="false"/>
+            <SettingDefinition name="Proxy Username" defaultValue="" description="" type="string"
+                               required="false" encrypt="false" mask="false"/>
+            <SettingDefinition name="Proxy Password" defaultValue="" description="" type="string"
+                               required="false" encrypt="true" mask="true"/>
+
+        </SettingDefinitions>
+        <ConstantSettings>
+            <ConstantSetting name="Exchange Type" value="pickup"/>
+        </ConstantSettings>
+    </TransportDefinition>
+    <TransportDefinition name="S3 Producer"
+                         description="Pluggable transport which produces messages to S3 Buckets / Folders."
+                         available="true">
+        <Class>com.axway.gps.PluggableS3Transport</Class>
+        <Usages>
+            <Produce>
+                <Integration/>
+                <RawTrading/>
+            </Produce>
+        </Usages>
+        <SettingDefinitions>
+            <SettingDefinition name="Access Key" defaultValue=""
+                               description="IP/Address or Hostname" type="string" required="true" encrypt="false"
+                               mask="false"/>
+            <SettingDefinition name="Secret Key" defaultValue="" description="AWS Secret Key"
+                               type="string" required="true" encrypt="true" mask="true"/>
+            <SettingDefinition name="AWS Region" defaultValue="us-west-1"
+                               description="Select AWS region to reduce latency" type="string" required="true"
+                               encrypt="false" mask="false">
+                <SelectionList>
+                    <SelectionItem>us-east-2</SelectionItem>
+                    <SelectionItem>us-east-1</SelectionItem>
+                    <SelectionItem>us-west-1</SelectionItem>
+                    <SelectionItem>us-west-2</SelectionItem>
+                    <SelectionItem>ap-south-1</SelectionItem>
+                    <SelectionItem>ap-northeast-2</SelectionItem>
+                    <SelectionItem>ap-northeast-3</SelectionItem>
+                    <SelectionItem>ap-southeast-1</SelectionItem>
+                    <SelectionItem>ap-southeast-2</SelectionItem>
+                    <SelectionItem>ap-northeast-1</SelectionItem>
+                    <SelectionItem>ca-central-1</SelectionItem>
+                    <SelectionItem>cn-north-1</SelectionItem>
+                    <SelectionItem>eu-central-1</SelectionItem>
+                    <SelectionItem>eu-west-1</SelectionItem>
+                    <SelectionItem>eu-west-2</SelectionItem>
+                    <SelectionItem>eu-west-3</SelectionItem>
+                    <SelectionItem>sa-east-1</SelectionItem>
+                </SelectionList>
+            </SettingDefinition>
+            <SettingDefinition name="Bucket" defaultValue="" description="Bucket name"
+                               encrypt="false" mask="false" required="true" type="string"/>
+            <SettingDefinition name="Folder" defaultValue=""
+                               description="Folder name. Illustrative example: Folder\DeliveryFolder"
+                               encrypt="false" mask="false" required="true" type="string"/>
+            <SettingDefinition name="Use Proxy" description="Use Proxy for pickup exchanges"
+                               encrypt="false" mask="false" required="true" type="string" defaultValue="false">
+                <SelectionList>
+                    <SelectionItem>true</SelectionItem>
+                    <SelectionItem>false</SelectionItem>
+                </SelectionList>
+            </SettingDefinition>
+            <SettingDefinition name="Proxy Host" defaultValue="" description="" type="string"
+                               required="false" encrypt="false" mask="false"/>
+            <SettingDefinition name="Proxy Port" defaultValue="" description="" type="string"
+                               required="false" encrypt="false" mask="false"/>
+            <SettingDefinition name="Proxy Username" defaultValue="" description="" type="string"
+                               required="false" encrypt="false" mask="false"/>
+            <SettingDefinition name="Proxy Password" defaultValue="" description="" type="string"
+                               required="false" encrypt="true" mask="true"/>
+        </SettingDefinitions>
+
+        <ConstantSettings>
+            <ConstantSetting name="Exchange Type" value="delivery"/>
+        </ConstantSettings>
+    </TransportDefinition>
+    <!--
         Azure Blob Storage Consumer to download/consume content from Azure Storage Blobs.
         NOTE: ConstantSetting must be set to Pickup
 -->
-<TransportDefinition name="Azure Blob Storage Consumer" description="Pluggable transport which consumes messages from the Azure Blob Store." available="true">
+    <TransportDefinition name="Azure Blob Storage Consumer"
+                         description="Pluggable transport which consumes messages from the Azure Blob Store."
+                         available="true">
         <Class>com.axway.pct.b2b.plugins.transport.AzureBlobPluggableTransport</Class>
         <Usages>
-                <Consume>
-                        <Integration />
-                        <RawTrading />
-                </Consume>
+            <Consume>
+                <Integration/>
+                <RawTrading/>
+            </Consume>
         </Usages>
         <SettingDefinitions>
-                <SettingDefinition name="Account Name" defaultValue="" description="Azure Storage Account Name" type="string" required="true" encrypt="false" mask="false"/>
-                <SettingDefinition name="Account Key" defaultValue="" description="Azure Storage Account Key" type="string" required="true" encrypt="true" mask="true"/>
-                <SettingDefinition name="Container" defaultValue="" description="Container within the Storage Account" encrypt="false" mask="false" required="true" type="string" />
-                <SettingDefinition name="Pickup Folder" defaultValue="" description="Source Folder" encrypt="false" mask="false" required="false" type="string"/>
-                <SettingDefinition name="Filter Type" defaultValue="glob" description="Pattern type for matching file names" type="string" required="true" encrypt="false" mask="false">
-                        <SelectionList>
-                                <SelectionItem>glob</SelectionItem>
-                                <SelectionItem>regex</SelectionItem>
-                        </SelectionList>
-                </SettingDefinition>
-                <SettingDefinition name="Filter" defaultValue="*" description="Filter pattern to download remote files" encrypt="false" mask="false" required="true" type="string"/>
+            <SettingDefinition name="Authenticate Mode"
+                               description="Determine Authentication Method" encrypt="false" mask="false"
+                               required="true" type="string" defaultValue="SAS Token">
+                <SelectionList>
+                    <SelectionItem>SAS Token</SelectionItem>
+                    <SelectionItem>Key</SelectionItem>
+                </SelectionList>
+            </SettingDefinition>
+            <SettingDefinition name="SAS Token" defaultValue="Token" description="SAS Token"
+                               type="string" required="true" encrypt="true" mask="true"/>
+            <SettingDefinition name="Account Name" defaultValue="Name"
+                               description="Azure Storage Account Name" type="string" required="true"
+                               encrypt="false" mask="false"/>
+            <SettingDefinition name="Account Key" defaultValue="Key"
+                               description="Azure Storage Account Key" type="string" required="true" encrypt="true"
+                               mask="true"/>
+            <SettingDefinition name="Container" defaultValue=""
+                               description="Container within the Storage Account" encrypt="false" mask="false"
+                               required="true" type="string"/>
+            <SettingDefinition name="Pickup Folder" defaultValue="" description="Source Folder"
+                               encrypt="false" mask="false" required="false" type="string"/>
+            <SettingDefinition name="Filter Type" defaultValue="glob"
+                               description="Pattern type for matching file names" type="string" required="true"
+                               encrypt="false" mask="false">
+                <SelectionList>
+                    <SelectionItem>glob</SelectionItem>
+                    <SelectionItem>regex</SelectionItem>
+                </SelectionList>
+            </SettingDefinition>
+            <SettingDefinition name="Filter" defaultValue="*"
+                               description="Filter pattern to download remote files" encrypt="false" mask="false"
+                               required="true" type="string"/>
         </SettingDefinitions>
         <ConstantSettings>
-                <ConstantSetting name="Exchange Type" value="pickup" />
+            <ConstantSetting name="Exchange Type" value="pickup"/>
         </ConstantSettings>
-</TransportDefinition>
+    </TransportDefinition>
 
 
-<!--
-        Azure Blob Storage Producer to upload/produce content to Azure Storage as Blobs.
-        NOTE: ConstantSetting must be set to Delivery
--->
-<TransportDefinition name="Azure Blob Storage Producer" description="Pluggable transport which produces messages to the Azure Blob Storage." available="true">
+    <!--
+                Azure Blob Storage Producer to upload/produce content to Azure Storage as Blobs.
+                NOTE: ConstantSetting must be set to Delivery
+        -->
+    <TransportDefinition name="Azure Blob Storage Producer"
+                         description="Pluggable transport which produces messages to the Azure Blob Storage."
+                         available="true">
         <Class>com.axway.pct.b2b.plugins.transport.AzureBlobPluggableTransport</Class>
         <Usages>
-                <Produce>
-                        <Integration />
-                        <RawTrading />
-                </Produce>
+            <Produce>
+                <Integration/>
+                <RawTrading/>
+            </Produce>
         </Usages>
         <SettingDefinitions>
-                <SettingDefinition name="Account Name" defaultValue="" description="Azure Storage Account Name" type="string" required="true" encrypt="false" mask="false" />
-                <SettingDefinition name="Account Key" defaultValue="" description="Azure Storage Account Key" type="string" required="true" encrypt="true" mask="true" />
-                <SettingDefinition name="Container" description="Container within the Storage account" encrypt="false" mask="false" required="true" type="string" defaultValue="" />
-                <SettingDefinition name="Auto Create" description="Auto create Container within the Storage account if it doesn't exist" encrypt="false" mask="false" required="true" type="string" defaultValue="true">
-                        <SelectionList>
-                                <SelectionItem>true</SelectionItem>
-                                <SelectionItem>false</SelectionItem>
-                        </SelectionList>
-                </SettingDefinition>
-                <SettingDefinition name="Delivery Mode" description="Upload mode to use for transfers (auto|single|multipart)" type="string" defaultValue="auto" required="true" encrypt="false" mask="false">
-                        <SelectionList>
-                                <SelectionItem>auto</SelectionItem>
-                                <SelectionItem>single</SelectionItem>
-                                <SelectionItem>multipart</SelectionItem>
-                        </SelectionList>
-                </SettingDefinition>
-                <SettingDefinition name="Delivery Folder" description="Destination folder to upload the blob within a container. Default is \"/\"" encrypt="false" mask="false" required="false" type="string" defaultValue="" />
-                <SettingDefinition name="User Metadata" description="Custom Metadata to add to Payload" encrypt="false" mask="false" required="false" type="multiString" defaultValue="" />
-                <SettingDefinition name="Append Axway Metadata" description="Append B2Bi Metadata to blob" type="string" defaultValue="yes" required="true" encrypt="false" mask="false">
-                        <SelectionList>
-                                <SelectionItem>yes</SelectionItem>
-                                <SelectionItem>no</SelectionItem>
-                        </SelectionList>
-                </SettingDefinition>
+            <SettingDefinition name="Authenticate Mode"
+                               description="Determine Authentication Method" encrypt="false" mask="false"
+                               required="true" type="string" defaultValue="SAS Token">
+                <SelectionList>
+                    <SelectionItem>SAS Token</SelectionItem>
+                    <SelectionItem>Key</SelectionItem>
+                </SelectionList>
+            </SettingDefinition>
+            <SettingDefinition name="SAS Token" defaultValue="Token" description="SAS Token"
+                               type="string" required="true" encrypt="true" mask="true"/>
+            <SettingDefinition name="Account Name" defaultValue="Name"
+                               description="Azure Storage Account Name" type="string" required="true"
+                               encrypt="false" mask="false"/>
+            <SettingDefinition name="Account Key" defaultValue="Key"
+                               description="Azure Storage Account Key" type="string" required="true" encrypt="true"
+                               mask="true"/>
+            <SettingDefinition name="Container" description="Container within the Storage account"
+                               encrypt="false" mask="false" required="true" type="string" defaultValue=""/>
+            <SettingDefinition name="Auto Create"
+                               description="Auto create Container within the Storage account if it doesn't exist"
+                               encrypt="false" mask="false" required="true" type="string" defaultValue="true">
+                <SelectionList>
+                    <SelectionItem>true</SelectionItem>
+                    <SelectionItem>false</SelectionItem>
+                </SelectionList>
+            </SettingDefinition>
+            <SettingDefinition name="Delivery Mode"
+                               description="Upload mode to use for transfers (auto|single|multipart)" type="string"
+                               defaultValue="auto" required="true" encrypt="false" mask="false">
+                <SelectionList>
+                    <SelectionItem>auto</SelectionItem>
+                    <SelectionItem>single</SelectionItem>
+                    <SelectionItem>multipart</SelectionItem>
+                </SelectionList>
+            </SettingDefinition>
+            <SettingDefinition name="Delivery Folder"
+                               description="Destination folder to upload the blob within a container."
+                               encrypt="false" mask="false" required="false" type="string" defaultValue=""/>
+            <SettingDefinition name="User Metadata" description="Custom Metadata to add to Payload"
+                               encrypt="false" mask="false" required="false" type="multiString" defaultValue=""/>
+            <SettingDefinition name="Append Axway Metadata"
+                               description="Append B2Bi Metadata to blob" type="string" defaultValue="yes"
+                               required="true" encrypt="false" mask="false">
+                <SelectionList>
+                    <SelectionItem>yes</SelectionItem>
+                    <SelectionItem>no</SelectionItem>
+                </SelectionList>
+            </SettingDefinition>
         </SettingDefinitions>
         <ConstantSettings>
-                <ConstantSetting name="Exchange Type" value="delivery" />
+            <ConstantSetting name="Exchange Type" value="delivery"/>
         </ConstantSettings>
-</TransportDefinition>
-
+    </TransportDefinition>
+</TransportDefinitions>

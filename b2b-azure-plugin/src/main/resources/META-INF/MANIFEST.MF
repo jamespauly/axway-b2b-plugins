@@ -1,1 +1,1 @@
-Class-Path: b2b-azure-plugin/lib/azure-storage-6.1.0.jar b2b-azure-plugin/lib/azure-keyvault-core-0.8.0.jar b2b-azure-plugin/lib/commons-lang3-3.7.jar
+Class-Path: b2b-azure-plugin/lib/azure-storage-7.0.0.jar b2b-azure-plugin/lib/azure-keyvault-core-1.0.0.jar b2b-azure-plugin/lib/commons-lang3-3.7.jar b2b-azure-plugin/lib/commons-io-2.4.jar b2b-azure-plugin/lib/log4j-1.2.17.jar b2b-azure-plugin/lib/slf4j-api-1.7.12.jar b2b-azure-plugin/lib/hamcrest-core-1.3.jar b2b-azure-plugin/lib/guava-20.0.jar b2b-azure-plugin/lib/jackson-core-2.6.0.jar
